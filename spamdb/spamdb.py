@@ -1,5 +1,23 @@
 import peewee
-import inspect
+
+
+SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
+
+
+def super_global_handler(field_name):
+    return _decorate(field_name, SUPER_GLOBAL_HANDLERS)
+
+
+def _decorate(key, container):
+    def fn(f):
+        container.update({key: f})
+        return f
+    return fn
+
+
+@super_global_handler('CharField')
+def spam_charfield(field):
+    pass
 
 
 class Spamdb(list):
@@ -13,15 +31,10 @@ class Spamdb(list):
         for a in args:
             self.append(a)
 
-        # used to register custom handler for fields and types
-        self.global_handlers = {}
+        # used to register custom handler for fields
+        self.global_handlers = SUPER_GLOBAL_HANDLERS
         self.strict_handlers = {}
 
-    def _decorate(self, key, attr):
-        def fn(f):
-            attr.update({key: f})
-            return f
-        return fn
 
     def strict_handler(self, field_qname):
         """
@@ -38,7 +51,7 @@ class Spamdb(list):
                         # called when spamming User.name field
                     return "Hi there!!"
         """
-        return self._decorate(field_qname, self.strict_handlers)
+        return _decorate(field_qname, self.strict_handlers)
 
     def global_handler(self, field_type):
         """
@@ -55,7 +68,10 @@ class Spamdb(list):
                         # called when spamming all peewee.CharField fields
                     return "My custom string"
         """
-        return self._decorate(field_type, self.global_handlers)
+        return _decorate(field_type, self.global_handlers)
+
+    def spam(self, field_name, field_type):
+        print field_name, field_type
 
     def run(self):
         """
@@ -63,8 +79,5 @@ class Spamdb(list):
         spam them accordingly
         """
         for model in self.__iter__():
-            for k, v in inspect.getmembers(model):
-                if type(v) == peewee.CharField:
-                    print k, type(v)
-                elif type(v) == peewee.DateTimeField:
-                    print k, type(v)
+            for field_name, field_instance in model._meta.get_sorted_fields():
+                self.spam(field_name, type(field_instance))
