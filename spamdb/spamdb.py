@@ -9,6 +9,10 @@ def super_global_handler(field_name):
 
 
 def _decorate(key, container):
+    """
+    Decorator user to register function handlers on a given
+    container
+    """
     def fn(f):
         container.update({key: f})
         return f
@@ -17,6 +21,67 @@ def _decorate(key, container):
 
 @super_global_handler('CharField')
 def spam_charfield(field):
+    pass
+
+
+@super_global_handler('TextField')
+def spam_textfield(field):
+    pass
+
+
+@super_global_handler('DateTimeField')
+def spam_datetimefield(field):
+    pass
+
+
+@super_global_handler('IntegerField')
+def spam_floatfield(field):
+    pass
+
+
+@super_global_handler('BooleanField')
+def spam_floatfield(field):
+    pass
+
+
+@super_global_handler('FloatField')
+def spam_floatfield(field):
+    pass
+
+
+@super_global_handler('DoubleField')
+def spam_doublefield(field):
+    pass
+
+
+@super_global_handler('BigIntegerField')
+def spam_bigintergerfield(field):
+    #return random.randint(- 10 ** 10, 10 ** 10)
+    pass
+
+
+@super_global_handler('DecimalField')
+def spam_decimalfield(field):
+    pass
+
+
+@super_global_handler('PrimaryKeyField')
+def spam_primarykeyfield(field):
+    pass
+
+
+@super_global_handler('ForeignKeyField')
+def spam_datetimefield(field):
+    pass
+
+
+@super_global_handler('DateField')
+def spam_datetimefield(field):
+    pass
+
+
+@super_global_handler('TimeField')
+def spam_timefield(field):
     pass
 
 
@@ -34,7 +99,6 @@ class Spamdb(list):
         # used to register custom handler for fields
         self.global_handlers = SUPER_GLOBAL_HANDLERS
         self.strict_handlers = {}
-
 
     def strict_handler(self, field_qname):
         """
