@@ -192,6 +192,10 @@ class AddModelTestCase(unittest.TestCase):
         with self.assertRaises(TypeError):
             Spamdb(NonPeeweeModel)
 
+        with self.assertRaises(TypeError):
+            sdb = Spamdb()
+            sdb.append(NonPeeweeModel)
+
     def test_add_model(self):
         """
         A Spamdb instance should contain the models passed as params,
