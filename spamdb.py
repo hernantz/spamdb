@@ -132,15 +132,21 @@ class Spamdb(list):
         """
         return _decorate(field_type, self.global_handlers)
 
-    def spam(self, model):
+    def get_handler(self, model, field):
+        pass
+
+    def spam_field(self, handler):
+        pass
+
+    def spam_model(self, model):
         """
-        Iterates through all peewee attrs of a model to
-        spam them accordingly
+        Iterates through all peewee attrs of a model and get the 
+        appropiate handler to spam them accordingly
         """
         for field_name, field_instance in model._meta.get_sorted_fields():
-            print model.__class__, field_name, field_instance.__class__
+            
 
     def run(self):
         """Iterates through all models"""
         for model in self.__iter__():
-            self.spam(model)
+            self.spam_model(model)
