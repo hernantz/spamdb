@@ -87,9 +87,6 @@ def spam_timefield(field):
 
 class Spamdb(list):
 
-    # shortcut to append
-    add = list.append
-
     def __init__(self, *args):
         # allow passing models as positional arguments
         # so it is possible to do s = Spamdb(model, another_model)
@@ -99,6 +96,12 @@ class Spamdb(list):
         # used to register custom handler for fields
         self.global_handlers = SUPER_GLOBAL_HANDLERS
         self.strict_handlers = {}
+
+    def append(self, item):
+
+        if not issubclass(item, peewee.Model):
+            raise TypeError, 'item is not of type peewee.Model'
+        super(Spamdb, self).append(item)  # append the item to ourself (the list)
 
     def strict_handler(self, field_qname):
         """
