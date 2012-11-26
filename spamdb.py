@@ -113,9 +113,9 @@ class Spamdb(list):
 
                 sdb = spamdb.Spamdb()
 
-                @sdb.strict_handler('models.User.name'):
+                @sdb.strict_handler(models.User.name):
                 def spam_username(field):
-                        # called when spamming User.name field
+                    # called when spamming User.name field
                     return "Hi there!!"
         """
         return _decorate(field_qname, self.strict_handlers)
@@ -125,14 +125,15 @@ class Spamdb(list):
         Used to override default behaviour for a field type in all models
                 Example usage:
                 import spamdb
+                import peewee
                 import myapp.models
 
 
                 sdb = spamdb.Spamdb()
 
-                @sdb.global_handler('CharField'):
+                @sdb.global_handler(peewee.CharField):
                 def spam_charfield(field):
-                        # called when spamming all peewee.CharField fields
+                    # called when spamming all peewee.CharField fields
                     return "My custom string"
         """
         return _decorate(field_type, self.global_handlers)
@@ -147,4 +148,4 @@ class Spamdb(list):
         """
         for model in self.__iter__():
             for field_name, field_instance in model._meta.get_sorted_fields():
-                self.spam(field_name, type(field_instance))
+                self.spam(field_name, field_instance.__class__)
