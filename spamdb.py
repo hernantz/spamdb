@@ -19,68 +19,68 @@ def _decorate(key, container):
     return fn
 
 
-@super_global_handler('CharField')
+@super_global_handler(peewee.CharField)
 def spam_charfield(field):
     pass
 
 
-@super_global_handler('TextField')
+@super_global_handler(peewee.TextField)
 def spam_textfield(field):
     pass
 
 
-@super_global_handler('DateTimeField')
+@super_global_handler(peewee.DateTimeField)
 def spam_datetimefield(field):
     pass
 
 
-@super_global_handler('IntegerField')
+@super_global_handler(peewee.IntegerField)
 def spam_floatfield(field):
     pass
 
 
-@super_global_handler('BooleanField')
+@super_global_handler(peewee.BooleanField)
 def spam_floatfield(field):
     pass
 
 
-@super_global_handler('FloatField')
+@super_global_handler(peewee.FloatField)
 def spam_floatfield(field):
     pass
 
 
-@super_global_handler('DoubleField')
+@super_global_handler(peewee.DoubleField)
 def spam_doublefield(field):
     pass
 
 
-@super_global_handler('BigIntegerField')
+@super_global_handler(peewee.BigIntegerField)
 def spam_bigintergerfield(field):
     #return random.randint(- 10 ** 10, 10 ** 10)
     pass
 
 
-@super_global_handler('DecimalField')
+@super_global_handler(peewee.DecimalField)
 def spam_decimalfield(field):
     pass
 
 
-@super_global_handler('PrimaryKeyField')
+@super_global_handler(peewee.PrimaryKeyField)
 def spam_primarykeyfield(field):
     pass
 
 
-@super_global_handler('ForeignKeyField')
+@super_global_handler(peewee.ForeignKeyField)
 def spam_datetimefield(field):
     pass
 
 
-@super_global_handler('DateField')
+@super_global_handler(peewee.DateField)
 def spam_datetimefield(field):
     pass
 
 
-@super_global_handler('TimeField')
+@super_global_handler(peewee.TimeField)
 def spam_timefield(field):
     pass
 
@@ -135,16 +135,26 @@ class Spamdb(list):
     def get_handler(self, model, field):
         pass
 
-    def spam_field(self, handler):
+    def spam_field(self, field, handler):
         pass
 
     def spam_model(self, model):
         """
-        Iterates through all peewee attrs of a model and get the 
-        appropiate handler to spam them accordingly
+        Iterates through all peewee attrs of a given model and gets the
+        appropiate handler to spam each
         """
+
+        attrs = {}  # this dict will hold all spammed attributes
+
         for field_name, field_instance in model._meta.get_sorted_fields():
-            
+            handler = self.get_handler(model, field_name)
+            if handler is not None:
+                attr_value = handler()
+                attrs.update(field_name, attr_value)
+
+        # create an instance of the model with the spammed fields and save it
+        obj = model.create(**attrs)
+        obj.save()
 
     def run(self):
         """Iterates through all models"""
