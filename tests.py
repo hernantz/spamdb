@@ -184,18 +184,6 @@ class ModelTestCase(unittest.TestCase):
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
 
-    def test_add_exception(self):
-        """Adding a non peewee.Model type object should raise an TypeError exception"""
-
-        class NonPeeweeModel(): pass
-        
-        with self.assertRaises(TypeError):
-            Spamdb(NonPeeweeModel)
-
-        with self.assertRaises(TypeError):
-            sdb = Spamdb()
-            sdb.append(NonPeeweeModel)
-
     def test_add_model(self):
         """
         A Spamdb instance should contain the models passed as params,
