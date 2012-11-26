@@ -1,13 +1,15 @@
 import unittest
+import datetime
 from spamdb import Spamdb
+from peewee import *
 
 
 class TestModel(Model):
-	"""
-	Base test model class
-	"""
+    """
+    Base test model class
+    """
     class Meta:
-        database = test_db
+        database = '/tmp/test.db'
 
 
 # Model classes used by test cases
@@ -147,7 +149,6 @@ class OrphanPet(TestModel):
 
 MODELS = [User, Blog, Comment, Relationship, NullModel, UniqueModel, OrderedModel, Category, UserCategory,
           NonIntModel, NonIntRelModel, DBUser, DBBlog, SeqModelA, SeqModelB, MultiIndexModel, BlogTwo]
-INT = test_db.interpolation
 
 
 def drop_tables(only=None):
@@ -178,3 +179,36 @@ class ModelTestCase(unittest.TestCase):
     def create_users(self, n):
         for i in range(n):
             self.create_user('u%d' % (i + 1))
+
+
+class AddModelTestCase(unittest.TestCase):
+    """Test that Spamdb contains the right models"""
+
+    def test_add_exception(self):
+        """Adding a non peewee.Model type object should raise an TypeError exception"""
+
+        class NonPeeweeModel(): pass
+        
+        with self.assertRaises(TypeError):
+            Spamdb(NonPeeweeModel)
+
+    def test_add_model(self):
+        """
+        A Spamdb instance should contain the models passed as params,
+        and in the order they where added
+        """
+        sdb = Spamdb(User, Blog)
+        sdb.append(Comment)
+        self.assertEquals(sdb[0], User)
+        self.assertEquals(sdb[1], Blog)
+        self.assertEquals(sdb[2], Comment)
+
+
+class SuperGlobalTestCase(ModelTestCase):
+    """Test that super global handlers spam with the correct data"""
+    def __init__(self):
+        super(SuperGlobalTestCase, self).__init__()
+
+
+if __name__ == '__main__':
+    unittest.main()
