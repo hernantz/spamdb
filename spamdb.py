@@ -133,10 +133,14 @@ class Spamdb(list):
         return _decorate(field_type, self.global_handlers)
 
     def get_handler(self, model, field_name):
+        """
+        Lookup into the strict_handlers first and global_handlers later
+        for a function mapped to a given model and field_name /  field_type
+        """
         key = getattr(model, field_name, None)
-        print "KEY ", key
+
         handler = self.strict_handlers.get(key, None)
-        print "HANDLER ", str(handler)
+
         if not handler:
             handler = self.global_handlers.get(key.__class__, None)
 
