@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from spamdb import Spamdb
+from spamdb import Spamdb, _decorate, super_global_handler, SUPER_GLOBAL_HANDLERS
 from peewee import *
 
 
@@ -196,10 +196,38 @@ class AddModelTestCase(unittest.TestCase):
         self.assertEquals(sdb[2], Comment)
 
 
-class SuperGlobalTestCase(ModelTestCase):
-    """Test that super global handlers spam with the correct data"""
-    def __init__(self):
-        super(SuperGlobalTestCase, self).__init__()
+class HandlerDecoratorsTestCase(unittest.TestCase):
+    """
+    Test that the _decorate function registers the decorated function 
+    in the given container
+    """
+
+    def test_handler_decorator(self):
+       """
+       The _decorate function should register the decorated function 
+       in the given container
+       """
+       container = {}
+       key = 'test'
+
+       def empty_function(): pass
+       
+       decorator = _decorate(key, container)
+       decorator(empty_function)()
+
+       self.assertEquals({'test': empty_function}, container)
+
+    def test_super_global_handlers_mapping(self):
+        """
+        The super_global_handler decorator should add
+        the decorated function into the global_handlers dict in a Spamdb obj
+        """
+        @super_global_handler(User)
+        def empty_function(): pass
+
+        self.assertTrue(User in SUPER_GLOBAL_HANDLERS)
+        del SUPER_GLOBAL_HANDLERS[User] # don't polute other tests
+    
 
 
 if __name__ == '__main__':
