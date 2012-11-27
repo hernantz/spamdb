@@ -198,24 +198,25 @@ class AddModelTestCase(unittest.TestCase):
 
 class HandlerDecoratorsTestCase(unittest.TestCase):
     """
-    Test that the _decorate function registers the decorated function 
+    Test that the _decorate function registers the decorated function
     in the given container
     """
 
     def test_handler_decorator(self):
-       """
-       The _decorate function should register the decorated function 
-       in the given container
-       """
-       container = {}
-       key = 'test'
+        """
+        The _decorate function should register the decorated function
+        in the given container
+        """
+        container = {}
+        key = 'test'
 
-       def empty_function(): pass
-       
-       decorator = _decorate(key, container)
-       decorator(empty_function)()
+        def empty_function():
+            pass
 
-       self.assertEquals({'test': empty_function}, container)
+        decorator = _decorate(key, container)
+        decorator(empty_function)()
+
+        self.assertEquals({'test': empty_function}, container)
 
     def test_super_global_handlers_mapping(self):
         """
@@ -223,11 +224,79 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         the decorated function into the global_handlers dict in a Spamdb obj
         """
         @super_global_handler(User)
-        def empty_function(): pass
+        def empty_function():
+            pass
 
         self.assertTrue(User in SUPER_GLOBAL_HANDLERS)
-        del SUPER_GLOBAL_HANDLERS[User] # don't polute other tests
+        self.assertTrue(User in Spamdb().global_handlers)
+        self.assertFalse(User in Spamdb().strict_handlers)
+
+        del SUPER_GLOBAL_HANDLERS[User]  # don't polute other tests
+
+    def test_global_handlers_mapping(self):
+        """
+        The global_handler decorator should add
+        the decorated function into the global_handlers dict in a Spamdb obj
+        """
+
+        sdb = Spamdb()
+
+        @sdb.global_handler(User)
+        def empty_function():
+            pass
+
+        self.assertTrue(User in sdb.global_handlers)
+        self.assertFalse(User in sdb.strict_handlers)
+
+        del SUPER_GLOBAL_HANDLERS[User]  # don't polute other tests
+
+    def test_strict_handlers_mapping(self):
+        """
+        The strict_handler decorator should add
+        the decorated function into the strict_handlers dict in a Spamdb obj
+        """
+
+        sdb = Spamdb()
+
+        @sdb.strict_handler(User)
+        def empty_function():
+            pass
+
+        self.assertTrue(User in sdb.strict_handlers)
+        self.assertFalse(User in sdb.global_handlers)
+
+    def test_get_global_handler(self):
+        """
+        The Spamdb.get_handler method should return a 
+        globally registered spam function
+        """
+
+        sdb = Spamdb()
+
+        @sdb.global_handler(CharField)
+        def empty_function():
+            pass
+
+        self.assertEquals(sdb.get_handler(User, 'username'), empty_function)
     
+    def test_get_strict_handler(self):
+        """
+        The Spamdb.get_handler method should return a 
+        strictly registered spam function
+        """
+
+        sdb = Spamdb()
+
+        @sdb.global_handler(CharField)
+        def empty_global_function():
+            pass
+
+        @sdb.strict_handler(User.username)
+        def empty_strict_function():
+            pass
+
+        self.assertEquals(sdb.get_handler(User, 'username'), empty_strict_function)
+        self.assertTrue(sdb.get_handler(User, 'username') is not empty_global_function)
 
 
 if __name__ == '__main__':

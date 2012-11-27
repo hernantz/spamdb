@@ -132,8 +132,15 @@ class Spamdb(list):
         """
         return _decorate(field_type, self.global_handlers)
 
-    def get_handler(self, model, field):
-        pass
+    def get_handler(self, model, field_name):
+        key = getattr(model, field_name, None)
+        print "KEY ", key
+        handler = self.strict_handlers.get(key, None)
+        print "HANDLER ", str(handler)
+        if not handler:
+            handler = self.global_handlers.get(key.__class__, None)
+
+        return handler
 
     def spam_field(self, field, handler):
         pass
