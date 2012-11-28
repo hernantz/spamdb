@@ -156,10 +156,7 @@ class Spamdb(list):
 
         return handler
 
-    def spam_field(self, field, handler):
-        pass
-
-    def spam_model(self, model):
+    def spam_fields(self, model):
         """
         Iterates through all peewee attrs of a given model and gets the
         appropiate handler to spam each
@@ -171,13 +168,18 @@ class Spamdb(list):
             handler = self.get_handler(model, field_instance.__class__, field_name)
             if handler is not None:
                 attr_value = handler(model, field_instance.__class__, field_name)
-                attrs.update(field_name, attr_value)
+                attrs.update({field_name: attr_value})
+        return attrs
 
-        # create an instance of the model with the spammed fields and save it
-        obj = model.create(**attrs)
-        obj.save()
+    def spam_model(self, model, save=False):
+
+        attributes = self.spam_fields(model) # get spammed fields
+        obj = model.create(**attributes)
+        if save:
+            obj.save()
+        return obj
 
     def run(self):
         """Iterates through all models"""
         for model in self.__iter__():
-            self.spam_model(model)
+            self.spam_model(model, save=True)
