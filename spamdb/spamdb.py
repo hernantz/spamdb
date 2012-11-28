@@ -20,68 +20,68 @@ def _decorate(key, container):
 
 
 @super_global_handler(peewee.CharField)
-def spam_charfield(field):
+def spam_charfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.TextField)
-def spam_textfield(field):
+def spam_textfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.DateTimeField)
-def spam_datetimefield(field):
+def spam_datetimefield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.IntegerField)
-def spam_floatfield(field):
+def spam_floatfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.BooleanField)
-def spam_floatfield(field):
+def spam_floatfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.FloatField)
-def spam_floatfield(field):
+def spam_floatfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.DoubleField)
-def spam_doublefield(field):
+def spam_doublefield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.BigIntegerField)
-def spam_bigintergerfield(field):
+def spam_bigintergerfield(model, field_type, field_name):
     #return random.randint(- 10 ** 10, 10 ** 10)
     pass
 
 
 @super_global_handler(peewee.DecimalField)
-def spam_decimalfield(field):
+def spam_decimalfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.PrimaryKeyField)
-def spam_primarykeyfield(field):
+def spam_primarykeyfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.ForeignKeyField)
-def spam_datetimefield(field):
+def spam_datetimefield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.DateField)
-def spam_datetimefield(field):
+def spam_datetimefield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.TimeField)
-def spam_timefield(field):
+def spam_timefield(model, field_type, field_name):
     pass
 
 
@@ -132,7 +132,7 @@ class Spamdb(list):
         """
         return _decorate(field_type, self.global_handlers)
 
-    def get_handler(self, model, field_name):
+    def get_handler(self, model, field_type, field_name):
         """
         Lookup into the strict_handlers first and global_handlers later
         for a function mapped to a given model and field_name /  field_type
@@ -142,7 +142,7 @@ class Spamdb(list):
         handler = self.strict_handlers.get(key, None)
 
         if not handler:
-            handler = self.global_handlers.get(key.__class__, None)
+            handler = self.global_handlers.get(field_type, None)
 
         return handler
 
@@ -158,9 +158,9 @@ class Spamdb(list):
         attrs = {}  # this dict will hold all spammed attributes
 
         for field_name, field_instance in model._meta.get_sorted_fields():
-            handler = self.get_handler(model, field_name)
+            handler = self.get_handler(model, field_instance.__class__, field_name)
             if handler is not None:
-                attr_value = handler()
+                attr_value = handler(model, field_instance.__class__, field_name)
                 attrs.update(field_name, attr_value)
 
         # create an instance of the model with the spammed fields and save it
