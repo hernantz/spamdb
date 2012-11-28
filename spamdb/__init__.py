@@ -1,0 +1,1 @@
+from spamdb import *
