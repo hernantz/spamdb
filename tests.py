@@ -302,5 +302,20 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         self.assertTrue(handler is not empty_global_function)
 
 
+class SpamFunctionsTestCase(unittest.TestCase):
+    """
+    Test that all spam functions return expected values
+    """
+
+    def test_spam_charfield(self):
+        class CharFieldTestClass():
+            test_charfield = CharField(max_length=1)
+
+        spam = spam_charfield(CharFieldTestClass, 
+            CharFieldTestClass.test_charfield.__class__, 
+            'test_charfield')
+        self.assertTrue(len(spam) == 1)
+
+
 if __name__ == '__main__':
     unittest.main()

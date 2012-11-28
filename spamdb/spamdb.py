@@ -1,4 +1,6 @@
 import peewee
+import lorem_ipsum
+import random
 
 __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',\
            'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',\
@@ -25,7 +27,11 @@ def _decorate(key, container):
 
 @super_global_handler(peewee.CharField)
 def spam_charfield(model, field_type, field_name):
-    pass
+    max_length = getattr(model, field_name).attributes['max_length']
+    words = lorem_ipsum.sentence()
+    if max_length < len(words):
+        return words[:max_length].strip()
+    return words
 
 
 @super_global_handler(peewee.TextField)
