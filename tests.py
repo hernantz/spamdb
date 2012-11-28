@@ -277,8 +277,9 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         def empty_function():
             pass
 
-        self.assertEquals(sdb.get_handler(User, 'username'), empty_function)
-    
+        handler = sdb.get_handler(User, User.username.__class__, 'username')
+        self.assertEquals(handler, empty_function)
+
     def test_get_strict_handler(self):
         """
         The Spamdb.get_handler method should return a 
@@ -295,8 +296,9 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         def empty_strict_function():
             pass
 
-        self.assertEquals(sdb.get_handler(User, 'username'), empty_strict_function)
-        self.assertTrue(sdb.get_handler(User, 'username') is not empty_global_function)
+        handler = sdb.get_handler(User, User.username.__class__, 'username')
+        self.assertEquals(handler, empty_strict_function)
+        self.assertTrue(handler is not empty_global_function)
 
 
 if __name__ == '__main__':
