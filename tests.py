@@ -1,6 +1,7 @@
 import unittest
 import datetime
-from spamdb import Spamdb, _decorate, super_global_handler, SUPER_GLOBAL_HANDLERS
+from spamdb import *
+from spamdb import _decorate
 from peewee import *
 
 
