@@ -268,7 +268,7 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
 
     def test_get_global_handler(self):
         """
-        The Spamdb.get_handler method should return a 
+        The Spamdb.get_handler method should return a
         globally registered spam function
         """
 
@@ -283,7 +283,7 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
 
     def test_get_strict_handler(self):
         """
-        The Spamdb.get_handler method should return a 
+        The Spamdb.get_handler method should return a
         strictly registered spam function
         """
 
@@ -311,11 +311,43 @@ class SpamFunctionsTestCase(unittest.TestCase):
         class CharFieldTestClass():
             test_charfield = CharField(max_length=1)
 
-        spam = spam_charfield(CharFieldTestClass, 
-            CharFieldTestClass.test_charfield.__class__, 
+        spam = spam_charfield(CharFieldTestClass,
+            CharFieldTestClass.test_charfield.__class__,
             'test_charfield')
         self.assertTrue(len(spam) == 1)
 
+
+class SpamFieldsTestCase(unittest.TestCase):
+    """
+    Test that the Spamdb.spam_fields function returns a dict with the
+    models attributes and their respective spammed values
+    """
+
+    def test_spam_fields(self):
+        class FieldTestModel(Model):
+            test_charfield = CharField()
+            test_datefield = DateTimeField()
+            test_integerfield = IntegerField()
+
+        sdb = Spamdb(FieldTestModel)
+
+        @sdb.strict_handler(FieldTestModel.test_charfield)
+        def spam_testcharfield(model, field_type, field_name):
+            return "test"
+
+        @sdb.strict_handler(FieldTestModel.test_datefield)
+        def spam_testdatefield(model, field_type, field_name):
+            return datetime.date.today()
+
+        @sdb.strict_handler(FieldTestModel.test_integerfield)
+        def spam_testintegerfield(model, field_type, field_name):
+            return 1
+
+        spammed_attr = sdb.spam_fields(FieldTestModel)
+
+        self.assertEquals(spammed_attr['test_charfield'], "test")
+        self.assertEquals(spammed_attr['test_datefield'], datetime.date.today())
+        self.assertEquals(spammed_attr['test_integerfield'], 1)
 
 if __name__ == '__main__':
     unittest.main()
