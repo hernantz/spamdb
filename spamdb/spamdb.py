@@ -118,7 +118,7 @@ class Spamdb(list):
                 sdb = spamdb.Spamdb()
 
                 @sdb.strict_handler(models.User.name):
-                def spam_username(field):
+                def spam_username(model, field_type, field_name):
                     # called when spamming User.name field
                     return "Hi there!!"
         """
@@ -136,7 +136,7 @@ class Spamdb(list):
                 sdb = spamdb.Spamdb()
 
                 @sdb.global_handler(peewee.CharField):
-                def spam_charfield(field):
+                def spam_charfield(model, field_type, field_name):
                     # called when spamming all peewee.CharField fields
                     return "My custom string"
         """
