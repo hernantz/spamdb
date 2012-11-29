@@ -2,10 +2,10 @@ import peewee
 import lorem_ipsum
 import random
 
-__all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',\
-           'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',\
-          'spam_floatfield', 'spam_doublefield', 'spam_bigintergerfield',\
-          'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield']
+__all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
+           'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',
+           'spam_floatfield', 'spam_doublefield', 'spam_bigintergerfield',
+           'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield']
 
 SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
 
@@ -159,7 +159,9 @@ class Spamdb(list):
     def spam_fields(self, model):
         """
         Iterates through all peewee attrs of a given model and gets the
-        appropiate handler to spam each
+        appropiate handler to spam each.
+        Returns a dict of model attributes as keys and the respective spammed
+        content as values.
         """
 
         attrs = {}  # this dict will hold all spammed attributes
@@ -172,8 +174,11 @@ class Spamdb(list):
         return attrs
 
     def spam_model(self, model, save=False):
-
-        attributes = self.spam_fields(model) # get spammed fields
+        """
+        Creates and returns a spammed model.
+        If save is True, it will persist the spammed object before returning it.
+        """
+        attributes = self.spam_fields(model)  # get spammed fields
         obj = model.create(**attributes)
         if save:
             obj.save()
