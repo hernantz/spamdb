@@ -45,12 +45,12 @@ def spam_datetimefield(model, field_type, field_name):
 
 
 @super_global_handler(peewee.IntegerField)
-def spam_floatfield(model, field_type, field_name):
+def spam_integerfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.BooleanField)
-def spam_floatfield(model, field_type, field_name):
+def spam_booleanfield(model, field_type, field_name):
     pass
 
 
@@ -167,16 +167,21 @@ class Spamdb(list):
         attrs = {}  # this dict will hold all spammed attributes
 
         for field_name, field_instance in model._meta.get_sorted_fields():
-            handler = self.get_handler(model, field_instance.__class__, field_name)
+            handler = self.get_handler(model,
+                                       field_instance.__class__,
+                                       field_name)
             if handler is not None:
-                attr_value = handler(model, field_instance.__class__, field_name)
+                attr_value = handler(model,
+                                     field_instance.__class__,
+                                     field_name)
                 attrs.update({field_name: attr_value})
         return attrs
 
     def spam_model(self, model, save=False):
         """
         Creates and returns a spammed model.
-        If save is True, it will persist the spammed object before returning it.
+        If save is True, it will persist the spammed object
+        before returning it.
         """
         attributes = self.spam_fields(model)  # get spammed fields
         obj = model.create(**attributes)
