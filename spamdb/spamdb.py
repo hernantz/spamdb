@@ -81,12 +81,12 @@ def spam_primarykeyfield(model, field_type, field_name):
 
 
 @super_global_handler(peewee.ForeignKeyField)
-def spam_datetimefield(model, field_type, field_name):
+def spam_foreignkeyfield(model, field_type, field_name):
     pass
 
 
 @super_global_handler(peewee.DateField)
-def spam_datetimefield(model, field_type, field_name):
+def spam_datefield(model, field_type, field_name):
     pass
 
 
