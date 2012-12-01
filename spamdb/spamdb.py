@@ -5,7 +5,7 @@ import random
 
 __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
            'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',
-           'spam_floatfield', 'spam_doublefield', 'spam_bigintergerfield',
+           'spam_floatfield', 'spam_doublefield', 'spam_bigintegerfield',
            'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield',
            'spam_integerfield']
 
@@ -78,9 +78,11 @@ def spam_doublefield(model, field_type, field_name):
 
 
 @super_global_handler(peewee.BigIntegerField)
-def spam_bigintergerfield(model, field_type, field_name):
-    #return random.randint(- 10 ** 10, 10 ** 10)
-    pass
+def spam_bigintegerfield(model, field_type, field_name):
+    """
+    Return a random int between +-10 million
+    """
+    return random.randint(-10000000000, 10000000000) # 10 ** 10 = 10 million
 
 
 @super_global_handler(peewee.DecimalField)

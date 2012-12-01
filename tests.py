@@ -190,7 +190,7 @@ class FieldsTestModel(Model):
     text = TextField(max_length=10)
     datetime = DateTimeField()
     integer = IntegerField()
-
+    bigint = BigIntegerField()
 
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
@@ -343,13 +343,22 @@ class SpamFunctionsTestCase(unittest.TestCase):
 
     def test_spam_integerfield(self):
         """
-        We should recieve an int between -10000 and 10000
+        We should recieve an int between +-10000
         """
         spam_int = spam_integerfield(FieldsTestModel,
                                      FieldsTestModel.integer.__class__,
                                      'integer')
         self.assertTrue(-10000 <= spam_int <= 10000)
 
+    def test_spam_bigintegerfield(self):
+        """
+        We should recieve and int between +-10 million
+        """
+        ten_million = 10 ** 10
+        spam_int = spam_bigintegerfield(FieldsTestModel,
+                                    FieldsTestModel.bigint.__class__,
+                                    'bigint')
+        self.assertTrue(-ten_million <= spam_int <= ten_million)
 
 class SpamFieldsTestCase(unittest.TestCase):
     """
