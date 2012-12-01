@@ -2,7 +2,9 @@ import unittest
 import datetime
 from spamdb import *
 from spamdb import _decorate
-from peewee import *
+from peewee import CharField, ForeignKeyField, TextField, DateTimeField,\
+    PrimaryKeyField, DecimalField, FloatField, BigIntegerField,\
+    IntegerField, BooleanField, DateField, TimeField, Model, DoubleField
 
 
 class TestModel(Model):
@@ -183,10 +185,11 @@ class ModelTestCase(unittest.TestCase):
             self.create_user('u%d' % (i + 1))
 
 
-class FieldsTestClass():
-    test_charfield = CharField(max_length=1)
-    test_textfield = TextField(max_length=10)
-    test_datetime = DateTimeField()
+class FieldsTestModel(Model):
+    char = CharField(max_length=1)
+    text = TextField(max_length=10)
+    datetime = DateTimeField()
+    integer = IntegerField()
 
 
 class AddModelTestCase(unittest.TestCase):
@@ -316,15 +319,15 @@ class SpamFunctionsTestCase(unittest.TestCase):
     """
 
     def test_spam_charfield(self):
-        spam = spam_charfield(FieldsTestClass,
-                              FieldsTestClass.test_charfield.__class__,
-                              'test_charfield')
+        spam = spam_charfield(FieldsTestModel,
+                              FieldsTestModel.char.__class__,
+                              'char')
         self.assertTrue(len(spam) == 1)
 
     def test_spam_textfield(self):
-        spam = spam_textfield(FieldsTestClass,
-                              FieldsTestClass.test_textfield.__class__,
-                              'test_textfield')
+        spam = spam_textfield(FieldsTestModel,
+                              FieldsTestModel.text.__class__,
+                              'text')
         self.assertTrue(bool(len(spam)))
 
     def test_spam_datetimefield(self):
@@ -333,10 +336,19 @@ class SpamFunctionsTestCase(unittest.TestCase):
         """
         now = datetime.datetime.now()
         two_moths_ago = now - datetime.timedelta(days=60)
-        spam_date = spam_datetimefield(FieldsTestClass,
-                                       FieldsTestClass.test_datetime.__class__,
-                                       'test_datetime')
+        spam_date = spam_datetimefield(FieldsTestModel,
+                                       FieldsTestModel.datetime.__class__,
+                                       'datetime')
         self.assertTrue(two_moths_ago <= spam_date <= now)
+
+    def test_spam_integerfield(self):
+        """
+        We should recieve an int between -10000 and 10000
+        """
+        spam_int = spam_integerfield(FieldsTestModel,
+                                     FieldsTestModel.integer.__class__,
+                                     'integer')
+        self.assertTrue(-10000 <= spam_int <= 10000)
 
 
 class SpamFieldsTestCase(unittest.TestCase):
