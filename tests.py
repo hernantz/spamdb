@@ -191,6 +191,8 @@ class FieldsTestModel(Model):
     datetime = DateTimeField()
     integer = IntegerField()
     bigint = BigIntegerField()
+    boolean = BooleanField()
+
 
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
@@ -332,7 +334,7 @@ class SpamFunctionsTestCase(unittest.TestCase):
 
     def test_spam_datetimefield(self):
         """
-        We should recieve a date between now and up to two months ago
+        Expect a date between now and up to two months ago
         """
         now = datetime.datetime.now()
         two_moths_ago = now - datetime.timedelta(days=60)
@@ -343,7 +345,7 @@ class SpamFunctionsTestCase(unittest.TestCase):
 
     def test_spam_integerfield(self):
         """
-        We should recieve an int between +-10000
+        Expect an int between +-10000
         """
         spam_int = spam_integerfield(FieldsTestModel,
                                      FieldsTestModel.integer.__class__,
@@ -352,13 +354,23 @@ class SpamFunctionsTestCase(unittest.TestCase):
 
     def test_spam_bigintegerfield(self):
         """
-        We should recieve and int between +-10 million
+        Expect an int between +-10 million
         """
         ten_million = 10 ** 10
         spam_int = spam_bigintegerfield(FieldsTestModel,
-                                    FieldsTestModel.bigint.__class__,
-                                    'bigint')
+                                        FieldsTestModel.bigint.__class__,
+                                        'bigint')
         self.assertTrue(-ten_million <= spam_int <= ten_million)
+
+    def test_spam_booleanfield(self):
+        """
+        Expect a True / False value
+        """
+        spam_bool = spam_booleanfield(FieldsTestModel,
+                                      FieldsTestModel.boolean.__class__,
+                                      'boolean')
+        self.assertEquals(type(spam_bool), bool)
+
 
 class SpamFieldsTestCase(unittest.TestCase):
     """

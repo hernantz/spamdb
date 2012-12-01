@@ -7,7 +7,7 @@ __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
            'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',
            'spam_floatfield', 'spam_doublefield', 'spam_bigintegerfield',
            'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield',
-           'spam_integerfield']
+           'spam_integerfield', 'spam_booleanfield']
 
 SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
 
@@ -59,12 +59,12 @@ def spam_datetimefield(model, field_type, field_name):
 
 @super_global_handler(peewee.IntegerField)
 def spam_integerfield(model, field_type, field_name):
-   return random.randint(-10000, 10000)
+    return random.randint(-10000, 10000)
 
 
 @super_global_handler(peewee.BooleanField)
 def spam_booleanfield(model, field_type, field_name):
-    pass
+    return bool(random.randint(0, 1))
 
 
 @super_global_handler(peewee.FloatField)
@@ -82,7 +82,7 @@ def spam_bigintegerfield(model, field_type, field_name):
     """
     Return a random int between +-10 million
     """
-    return random.randint(-10000000000, 10000000000) # 10 ** 10 = 10 million
+    return random.randint(-10000000000, 10000000000)  # 10 ** 10 = 10 million
 
 
 @super_global_handler(peewee.DecimalField)
