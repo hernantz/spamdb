@@ -148,8 +148,9 @@ class OrphanPet(TestModel):
     orphan = ForeignKeyField(Orphan)
 
 
-MODELS = [User, Blog, Comment, Relationship, NullModel, UniqueModel, OrderedModel, Category, UserCategory,
-          NonIntModel, NonIntRelModel, DBUser, DBBlog, SeqModelA, SeqModelB, MultiIndexModel, BlogTwo]
+MODELS = [User, Blog, Comment, Relationship, NullModel, UniqueModel,
+          OrderedModel, Category, UserCategory, NonIntModel, NonIntRelModel,
+          DBUser, DBBlog, SeqModelA, SeqModelB, MultiIndexModel, BlogTwo]
 
 
 def drop_tables(only=None):
@@ -182,6 +183,12 @@ class ModelTestCase(unittest.TestCase):
             self.create_user('u%d' % (i + 1))
 
 
+class FieldsTestClass():
+    test_charfield = CharField(max_length=1)
+    test_textfield = TextField(max_length=10)
+    test_datetime = DateTimeField()
+
+
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
 
@@ -189,6 +196,7 @@ class AddModelTestCase(unittest.TestCase):
         """
         A Spamdb instance should contain the models passed as params,
         and in the order they where added
+        TestCase = DateTimeField()
         """
         sdb = Spamdb(User, Blog)
         sdb.append(Comment)
@@ -308,13 +316,27 @@ class SpamFunctionsTestCase(unittest.TestCase):
     """
 
     def test_spam_charfield(self):
-        class CharFieldTestClass():
-            test_charfield = CharField(max_length=1)
-
-        spam = spam_charfield(CharFieldTestClass,
-            CharFieldTestClass.test_charfield.__class__,
-            'test_charfield')
+        spam = spam_charfield(FieldsTestClass,
+                              FieldsTestClass.test_charfield.__class__,
+                              'test_charfield')
         self.assertTrue(len(spam) == 1)
+
+    def test_spam_textfield(self):
+        spam = spam_textfield(FieldsTestClass,
+                              FieldsTestClass.test_textfield.__class__,
+                              'test_textfield')
+        self.assertTrue(bool(len(spam)))
+
+    def test_spam_datetimefield(self):
+        """
+        We should recieve a date between now and up to two months ago
+        """
+        now = datetime.datetime.now()
+        two_moths_ago = now - datetime.timedelta(days=60)
+        spam_date = spam_datetimefield(FieldsTestClass,
+                                       FieldsTestClass.test_datetime.__class__,
+                                       'test_datetime')
+        self.assertTrue(two_moths_ago <= spam_date <= now)
 
 
 class SpamFieldsTestCase(unittest.TestCase):
@@ -346,8 +368,10 @@ class SpamFieldsTestCase(unittest.TestCase):
         spammed_attr = sdb.spam_fields(FieldTestModel)
 
         self.assertEquals(spammed_attr['test_charfield'], "test")
-        self.assertEquals(spammed_attr['test_datefield'], datetime.date.today())
+        self.assertEquals(spammed_attr['test_datefield'],
+                          datetime.date.today())
         self.assertEquals(spammed_attr['test_integerfield'], 1)
+
 
 if __name__ == '__main__':
     unittest.main()

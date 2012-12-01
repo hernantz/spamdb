@@ -1,4 +1,5 @@
 import peewee
+import datetime
 import lorem_ipsum
 import random
 
@@ -36,12 +37,16 @@ def spam_charfield(model, field_type, field_name):
 
 @super_global_handler(peewee.TextField)
 def spam_textfield(model, field_type, field_name):
-    pass
+    return '.\n\n'.join(lorem_ipsum.paragraphs(random.randrange(1, 10)))
 
 
 @super_global_handler(peewee.DateTimeField)
 def spam_datetimefield(model, field_type, field_name):
-    pass
+    """
+    Return a random date between now and two months ago
+    """
+    random_days = random.randrange(0, 60)
+    return datetime.datetime.now() - datetime.timedelta(days=random_days)
 
 
 @super_global_handler(peewee.IntegerField)
