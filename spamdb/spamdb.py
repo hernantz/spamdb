@@ -28,6 +28,10 @@ def _decorate(key, container):
 
 @super_global_handler(peewee.CharField)
 def spam_charfield(model, field_type, field_name):
+    """
+    Returns a random lorem ipsum sentence that does not overpass the
+    field's max_length attribute
+    """
     max_length = getattr(model, field_name).attributes['max_length']
     words = lorem_ipsum.sentence()
     if max_length < len(words):
