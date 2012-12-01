@@ -37,6 +37,9 @@ def spam_charfield(model, field_type, field_name):
 
 @super_global_handler(peewee.TextField)
 def spam_textfield(model, field_type, field_name):
+    """
+    Return a random number between 1 and 10 of lorem ipsum paragraphs
+    """
     return '.\n\n'.join(lorem_ipsum.paragraphs(random.randrange(1, 10)))
 
 
