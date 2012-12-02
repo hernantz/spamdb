@@ -76,7 +76,7 @@ def spam_floatfield(model, field_type, field_name):
 
 @super_global_handler(peewee.DoubleField)
 def spam_doublefield(model, field_type, field_name):
-    pass
+    return spam_floatfield(model, field_type, field_name)
 
 
 @super_global_handler(peewee.BigIntegerField)

@@ -193,7 +193,7 @@ class FieldsTestModel(Model):
     bigint = BigIntegerField()
     boolean = BooleanField()
     floatnum = FloatField()
-
+    double = DoubleField()
 
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
@@ -380,6 +380,16 @@ class SpamFunctionsTestCase(unittest.TestCase):
                                      FieldsTestModel.floatnum.__class__,
                                      'floatnum')
         self.assertEquals(type(spam_float), float)
+
+    def test_spam_doublefield(self):
+        """
+        Expect a float number
+        """
+        spam_float = spam_doublefield(FieldsTestModel,
+                                       FieldsTestModel.double.__class__,
+                                       'double')
+        self.assertEquals(type(spam_float), float)
+
 
 
 class SpamFieldsTestCase(unittest.TestCase):
