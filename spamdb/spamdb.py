@@ -8,7 +8,7 @@ __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
            'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',
            'spam_floatfield', 'spam_doublefield', 'spam_bigintegerfield',
            'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield',
-           'spam_integerfield', 'spam_booleanfield']
+           'spam_integerfield', 'spam_booleanfield', 'spam_datefield']
 
 SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
 
@@ -52,10 +52,11 @@ def spam_textfield(model, field_type, field_name):
 @super_global_handler(peewee.DateTimeField)
 def spam_datetimefield(model, field_type, field_name):
     """
-    Return a random date between now and two months ago
+    Return a random date between now and two months ago.
+    Consider days and time.
     """
-    random_days = random.randrange(0, 60)
-    return datetime.datetime.now() - datetime.timedelta(days=random_days)
+    minutes = random.randint(0, 86400)  # 2 months ~= 60d ~= 1440h ~= 86400min
+    return datetime.datetime.now() - datetime.timedelta(minutes=minutes)
 
 
 @super_global_handler(peewee.IntegerField)
@@ -105,7 +106,12 @@ def spam_foreignkeyfield(model, field_type, field_name):
 
 @super_global_handler(peewee.DateField)
 def spam_datefield(model, field_type, field_name):
-    pass
+    """
+    Return a random date between now and two months ago.
+    Consider days only.
+    """
+    random_days = random.randrange(0, 60)
+    return datetime.datetime.now() - datetime.timedelta(days=random_days)
 
 
 @super_global_handler(peewee.TimeField)

@@ -5,7 +5,7 @@ from spamdb import SUPER_GLOBAL_HANDLERS, super_global_handler, _decorate,\
     Spamdb, spam_charfield, spam_textfield, spam_datetimefield,\
     spam_floatfield, spam_doublefield, spam_bigintegerfield,\
     spam_decimalfield, spam_primarykeyfield, spam_timefield,\
-    spam_integerfield, spam_booleanfield
+    spam_integerfield, spam_booleanfield, spam_datefield
 from peewee import CharField, ForeignKeyField, TextField, DateTimeField,\
     PrimaryKeyField, DecimalField, FloatField, BigIntegerField,\
     IntegerField, BooleanField, DateField, TimeField, Model, DoubleField
@@ -199,6 +199,9 @@ class FieldsTestModel(Model):
     floatnum = FloatField()
     double = DoubleField()
     decimal_num = DecimalField()
+    time = TimeField()
+    date = DateField()
+
 
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
@@ -343,10 +346,21 @@ class SpamFunctionsTestCase(unittest.TestCase):
         Expect a date between now and up to two months ago
         """
         now = datetime.datetime.now()
-        two_moths_ago = now - datetime.timedelta(days=60)
+        two_moths_ago = now - datetime.timedelta(minutes=86400)
         spam_date = spam_datetimefield(FieldsTestModel,
                                        FieldsTestModel.datetime.__class__,
                                        'datetime')
+        self.assertTrue(two_moths_ago <= spam_date <= now)
+
+    def test_spam_datefield(self):
+        """
+        Expect a date between now and up to two months ago
+        """
+        now = datetime.datetime.now()
+        two_moths_ago = now - datetime.timedelta(days=60)
+        spam_date = spam_datefield(FieldsTestModel,
+                                       FieldsTestModel.date.__class__,
+                                       'date')
         self.assertTrue(two_moths_ago <= spam_date <= now)
 
     def test_spam_integerfield(self):
