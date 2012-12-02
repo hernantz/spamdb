@@ -69,7 +69,9 @@ def spam_booleanfield(model, field_type, field_name):
 
 @super_global_handler(peewee.FloatField)
 def spam_floatfield(model, field_type, field_name):
-    pass
+    num1 = float(random.randint(-10000, 10000))
+    num2 = random.randint(1, 10000)
+    return num1 / num2
 
 
 @super_global_handler(peewee.DoubleField)

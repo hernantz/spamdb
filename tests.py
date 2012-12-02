@@ -192,6 +192,7 @@ class FieldsTestModel(Model):
     integer = IntegerField()
     bigint = BigIntegerField()
     boolean = BooleanField()
+    floatnum = FloatField()
 
 
 class AddModelTestCase(unittest.TestCase):
@@ -370,6 +371,15 @@ class SpamFunctionsTestCase(unittest.TestCase):
                                       FieldsTestModel.boolean.__class__,
                                       'boolean')
         self.assertEquals(type(spam_bool), bool)
+
+    def test_spam_floatfield(self):
+        """
+        Expect a float number
+        """
+        spam_float = spam_floatfield(FieldsTestModel,
+                                     FieldsTestModel.floatnum.__class__,
+                                     'floatnum')
+        self.assertEquals(type(spam_float), float)
 
 
 class SpamFieldsTestCase(unittest.TestCase):
