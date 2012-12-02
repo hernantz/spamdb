@@ -359,9 +359,18 @@ class SpamFunctionsTestCase(unittest.TestCase):
         now = datetime.datetime.now()
         two_moths_ago = now - datetime.timedelta(days=60)
         spam_date = spam_datefield(FieldsTestModel,
-                                       FieldsTestModel.date.__class__,
-                                       'date')
+                                   FieldsTestModel.date.__class__,
+                                   'date')
         self.assertTrue(two_moths_ago <= spam_date <= now)
+
+    def test_spam_timefield(self):
+        """
+        Expect a time between 0hs and 23hs
+        """
+        spam_time = spam_timefield(FieldsTestModel,
+                                   FieldsTestModel.time.__class__,
+                                   'time')
+        self.assertTrue(type(spam_time), datetime.time)
 
     def test_spam_integerfield(self):
         """
@@ -414,10 +423,9 @@ class SpamFunctionsTestCase(unittest.TestCase):
         Expect a float number
         """
         spam_decimal = spam_decimalfield(FieldsTestModel,
-                                        FieldsTestModel.decimal_num.__class__,
-                                        'decimal_num')
+                                         FieldsTestModel.decimal_num.__class__,
+                                         'decimal_num')
         self.assertEquals(type(spam_decimal), decimal.Decimal)
-
 
 
 class SpamFieldsTestCase(unittest.TestCase):

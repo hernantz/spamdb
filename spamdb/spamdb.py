@@ -116,7 +116,10 @@ def spam_datefield(model, field_type, field_name):
 
 @super_global_handler(peewee.TimeField)
 def spam_timefield(model, field_type, field_name):
-    pass
+    hour = random.randint(0, 23)
+    minute = random.randint(0, 60)
+    second = random.randint(0, 60)
+    return datetime.time(hour=hour, minute=minute, second=second)
 
 
 class Spamdb(list):
