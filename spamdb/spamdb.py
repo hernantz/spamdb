@@ -1,5 +1,6 @@
 import peewee
 import datetime
+import decimal
 import lorem_ipsum
 import random
 
@@ -89,7 +90,7 @@ def spam_bigintegerfield(model, field_type, field_name):
 
 @super_global_handler(peewee.DecimalField)
 def spam_decimalfield(model, field_type, field_name):
-    pass
+    return decimal.Decimal(random.random() + random.randint(-10000, 10000))
 
 
 @super_global_handler(peewee.PrimaryKeyField)

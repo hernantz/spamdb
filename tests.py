@@ -1,7 +1,11 @@
 import unittest
 import datetime
-from spamdb import *
-from spamdb import _decorate
+import decimal
+from spamdb import SUPER_GLOBAL_HANDLERS, super_global_handler, _decorate,\
+    Spamdb, spam_charfield, spam_textfield, spam_datetimefield,\
+    spam_floatfield, spam_doublefield, spam_bigintegerfield,\
+    spam_decimalfield, spam_primarykeyfield, spam_timefield,\
+    spam_integerfield, spam_booleanfield
 from peewee import CharField, ForeignKeyField, TextField, DateTimeField,\
     PrimaryKeyField, DecimalField, FloatField, BigIntegerField,\
     IntegerField, BooleanField, DateField, TimeField, Model, DoubleField
@@ -194,6 +198,7 @@ class FieldsTestModel(Model):
     boolean = BooleanField()
     floatnum = FloatField()
     double = DoubleField()
+    decimal_num = DecimalField()
 
 class AddModelTestCase(unittest.TestCase):
     """Test that Spamdb contains the right models"""
@@ -386,9 +391,18 @@ class SpamFunctionsTestCase(unittest.TestCase):
         Expect a float number
         """
         spam_float = spam_doublefield(FieldsTestModel,
-                                       FieldsTestModel.double.__class__,
-                                       'double')
+                                      FieldsTestModel.double.__class__,
+                                      'double')
         self.assertEquals(type(spam_float), float)
+
+    def test_spam_decimalfield(self):
+        """
+        Expect a float number
+        """
+        spam_decimal = spam_decimalfield(FieldsTestModel,
+                                        FieldsTestModel.decimal_num.__class__,
+                                        'decimal_num')
+        self.assertEquals(type(spam_decimal), decimal.Decimal)
 
 
 
