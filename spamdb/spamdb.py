@@ -111,7 +111,7 @@ def spam_datefield(model, field_type, field_name):
     Consider days only.
     """
     random_days = random.randrange(0, 60)
-    return datetime.datetime.now() - datetime.timedelta(days=random_days)
+    return datetime.date.today() - datetime.timedelta(days=random_days)
 
 
 @super_global_handler(peewee.TimeField)

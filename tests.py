@@ -354,14 +354,14 @@ class SpamFunctionsTestCase(unittest.TestCase):
 
     def test_spam_datefield(self):
         """
-        Expect a date between now and up to two months ago
+        Expect a date between today and up to two months ago
         """
-        now = datetime.datetime.now()
-        two_moths_ago = now - datetime.timedelta(days=60)
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        two_moths_ago = datetime.date.today() - datetime.timedelta(days=60)
         spam_date = spam_datefield(FieldsTestModel,
                                    FieldsTestModel.date.__class__,
                                    'date')
-        self.assertTrue(two_moths_ago <= spam_date <= now)
+        self.assertTrue(two_moths_ago <= spam_date < tomorrow)
 
     def test_spam_timefield(self):
         """
