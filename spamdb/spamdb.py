@@ -122,6 +122,13 @@ def spam_timefield(model, field_type, field_name):
     return datetime.time(hour=hour, minute=minute, second=second)
 
 
+def _coin_toss():
+    """
+    Used to ignore or not a nullable field
+    """
+    return bool(random.randint(0, 1))
+
+
 class Spamdb(list):
 
     def __init__(self, *args):
@@ -194,14 +201,19 @@ class Spamdb(list):
         attrs = {}  # this dict will hold all spammed attributes
 
         for field_name, field_instance in model._meta.get_sorted_fields():
-            handler = self.get_handler(model,
-                                       field_instance.__class__,
-                                       field_name)
-            if handler is not None:
-                attr_value = handler(model,
-                                     field_instance.__class__,
-                                     field_name)
-                attrs.update({field_name: attr_value})
+            if field_instance.null and _coin_toss():
+                continue  # the field can be null and it was randomly skipped
+            else:
+                # otherwise the field can not be null
+                # or can be null but was randomly set to have a value
+                handler = self.get_handler(model,
+                                           field_instance.__class__,
+                                           field_name)
+                if handler is not None:
+                    attr_value = handler(model,
+                                         field_instance.__class__,
+                                         field_name)
+                    attrs.update({field_name: attr_value})
         return attrs
 
     def spam_model(self, model, save=False):
