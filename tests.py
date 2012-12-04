@@ -8,7 +8,8 @@ from spamdb import SUPER_GLOBAL_HANDLERS, super_global_handler, _decorate,\
     spam_integerfield, spam_booleanfield, spam_datefield
 from peewee import CharField, ForeignKeyField, TextField, DateTimeField,\
     PrimaryKeyField, DecimalField, FloatField, BigIntegerField,\
-    IntegerField, BooleanField, DateField, TimeField, Model, DoubleField
+    IntegerField, BooleanField, DateField, TimeField, Model, DoubleField,\
+    SqliteDatabase
 
 
 class TestModel(Model):
@@ -16,7 +17,7 @@ class TestModel(Model):
     Base test model class
     """
     class Meta:
-        database = '/tmp/test.db'
+        database = SqliteDatabase('/tmp/spamdb_tests.db')
 
 
 # Model classes used by test cases
@@ -270,8 +271,7 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
 
         self.assertTrue(User in sdb.global_handlers)
         self.assertFalse(User in sdb.strict_handlers)
-
-        del SUPER_GLOBAL_HANDLERS[User]  # don't polute other tests
+        self.assertFalse(User in SUPER_GLOBAL_HANDLERS)
 
     def test_strict_handlers_mapping(self):
         """
@@ -319,9 +319,21 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         def empty_strict_function():
             pass
 
+        sdb2 = Spamdb()
+
+        @sdb2.strict_handler(User.username)
+        def empty_strict_function2():
+            pass
+
+        sdb3 = Spamdb()
+
         handler = sdb.get_handler(User, User.username.__class__, 'username')
+        handler2 = sdb2.get_handler(User, User.username.__class__, 'username')
+        handler3 = sdb3.get_handler(User, User.username.__class__, 'username')
         self.assertEquals(handler, empty_strict_function)
         self.assertTrue(handler is not empty_global_function)
+        self.assertEquals(handler2, empty_strict_function2)
+        self.assertEquals(handler3, spam_charfield)
 
 
 class SpamFunctionsTestCase(unittest.TestCase):
@@ -461,6 +473,26 @@ class SpamFieldsTestCase(unittest.TestCase):
         self.assertEquals(spammed_attr['test_datefield'],
                           datetime.date.today())
         self.assertEquals(spammed_attr['test_integerfield'], 1)
+
+
+class SaveTestCase(ModelTestCase):
+    """
+    Test that Spamdb.spam_model(Model, save=True)
+    actually saves the Model to db
+    """
+    requires = [User]
+
+    def test_save_spammed_model(self):
+        """
+        Expect an instance id if the save param is set to True when
+        spamming a model
+        """
+        sdb = Spamdb()
+        user1 = sdb.spam_model(User, save=True)
+        self.assertEquals(user1.id, 1)
+
+        user2 = sdb.spam_model(User, save=False)
+        self.assertEquals(user2.id, None)
 
 
 if __name__ == '__main__':

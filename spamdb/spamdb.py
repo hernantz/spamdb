@@ -138,7 +138,7 @@ class Spamdb(list):
             self.append(a)
 
         # used to register custom handler for fields
-        self.global_handlers = SUPER_GLOBAL_HANDLERS
+        self.global_handlers = dict(SUPER_GLOBAL_HANDLERS)
         self.strict_handlers = {}
 
     def strict_handler(self, field_qname):
@@ -223,7 +223,7 @@ class Spamdb(list):
         before returning it.
         """
         attributes = self.spam_fields(model)  # get spammed fields
-        obj = model.create(**attributes)
+        obj = model(**attributes)
         if save:
             obj.save()
         return obj
