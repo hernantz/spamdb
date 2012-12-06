@@ -101,7 +101,9 @@ def spam_primarykeyfield(model, field_type, field_name):
 
 @super_global_handler(peewee.ForeignKeyField)
 def spam_foreignkeyfield(model, field_type, field_name):
-    pass
+    related_model = getattr(model, field_name).rel_model
+    query = related_model.select().order_by(peewee.fn.Random()).limit(1)
+    return [model for model in query][0]
 
 
 @super_global_handler(peewee.DateField)
@@ -228,7 +230,8 @@ class Spamdb(list):
             obj.save()
         return obj
 
-    def run(self):
+    def run(self, iterations=1):
         """Iterates through all models"""
-        for model in self.__iter__():
-            self.spam_model(model, save=True)
+        for i in range(0, iterations):
+            for model in self.__iter__():
+                self.spam_model(model, save=True)

@@ -336,10 +336,11 @@ class HandlerDecoratorsTestCase(unittest.TestCase):
         self.assertEquals(handler3, spam_charfield)
 
 
-class SpamFunctionsTestCase(unittest.TestCase):
+class SpamFunctionsTestCase(ModelTestCase):
     """
     Test that all spam functions return expected values
     """
+    requires = [User, Blog, FieldsTestModel]
 
     def test_spam_charfield(self):
         spam = spam_charfield(FieldsTestModel,
@@ -440,6 +441,12 @@ class SpamFunctionsTestCase(unittest.TestCase):
                                          'decimal_num')
         self.assertEquals(type(spam_decimal), decimal.Decimal)
 
+    def test_spam_foreignkeyfield(self):
+        """
+        Expect a random instance of a related object on the foreign key attribute
+        """
+        spam_model = spam_foreignkeyfield()
+
 
 class SpamFieldsTestCase(unittest.TestCase):
     """
@@ -493,6 +500,24 @@ class SaveTestCase(ModelTestCase):
 
         user2 = sdb.spam_model(User, save=False)
         self.assertEquals(user2.id, None)
+
+
+class RunIterationsTestCase(ModelTestCase):
+    """
+    Test that run() spams all models added to a
+    Spamdb instance.
+    """
+    requires = [User, Blog]
+
+    def test_one_model_iterations(self):
+        """
+        Expect the models to be spammed as many times as is set in
+        the iterations parameter of run method
+        """
+        sdb = Spamdb(User, User, Blog)
+        sdb.run(iterations=3)
+        self.assertEquals(User.select().count(), 6)
+        self.assertEquals(Blog.select().count(), 3)
 
 
 if __name__ == '__main__':
