@@ -8,7 +8,8 @@ __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
            'Spamdb', 'spam_charfield', 'spam_textfield', 'spam_datetimefield',
            'spam_floatfield', 'spam_doublefield', 'spam_bigintegerfield',
            'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield',
-           'spam_integerfield', 'spam_booleanfield', 'spam_datefield']
+           'spam_integerfield', 'spam_booleanfield', 'spam_datefield',
+           'spam_foreignkeyfield']
 
 SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
 
