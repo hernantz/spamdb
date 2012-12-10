@@ -5,7 +5,8 @@ from spamdb import SUPER_GLOBAL_HANDLERS, super_global_handler, _decorate,\
     Spamdb, spam_charfield, spam_textfield, spam_datetimefield,\
     spam_floatfield, spam_doublefield, spam_bigintegerfield,\
     spam_decimalfield, spam_primarykeyfield, spam_timefield,\
-    spam_integerfield, spam_booleanfield, spam_datefield, spam_foreignkeyfield
+    spam_integerfield, spam_booleanfield, spam_datefield,\
+    spam_foreignkeyfield, spam_choices
 from peewee import CharField, ForeignKeyField, TextField, DateTimeField,\
     PrimaryKeyField, DecimalField, FloatField, BigIntegerField,\
     IntegerField, BooleanField, DateField, TimeField, Model, DoubleField,\
@@ -68,6 +69,10 @@ class NullModel(TestModel):
 
 class UniqueModel(TestModel):
     name = CharField(unique=True)
+
+
+class ChoicesModel(TestModel):
+    status = IntegerField(choices=(1, 2, 3))
 
 
 class OrderedModel(TestModel):
@@ -157,7 +162,8 @@ class OrphanPet(TestModel):
 
 MODELS = [User, Blog, Comment, Relationship, NullModel, UniqueModel,
           OrderedModel, Category, UserCategory, NonIntModel, NonIntRelModel,
-          DBUser, DBBlog, SeqModelA, SeqModelB, MultiIndexModel, BlogTwo]
+          DBUser, DBBlog, SeqModelA, SeqModelB, MultiIndexModel,
+          BlogTwo, ChoicesModel]
 
 
 def drop_tables(only=None):
@@ -485,6 +491,31 @@ class SpamFieldsTestCase(unittest.TestCase):
         self.assertEquals(spammed_attr['test_datefield'],
                           datetime.date.today())
         self.assertEquals(spammed_attr['test_integerfield'], 1)
+
+
+class ChoicesTestCase(ModelTestCase):
+    """
+    Test that a field with one of it's choices param
+    """
+    requires = [ChoicesModel]
+
+    def test_spam_choices(self):
+        """
+        Expect a random choice from the choices tuple of the spammed field
+        """
+        random_choice = spam_choices(ChoicesModel,
+                                     ChoicesModel.status.__class__,
+                                     'status')
+        self.assertTrue(random_choice in ChoicesModel.status.choices)
+
+    def test_spam_model_choices(self):
+        """
+        Expect a model with a choices field to get spammed with one of the
+        chices
+        """
+        Spamdb(ChoicesModel).run()
+        spammed_model_status = ChoicesModel.get().status
+        self.assertTrue(spammed_model_status in ChoicesModel.status.choices)
 
 
 class SaveTestCase(ModelTestCase):

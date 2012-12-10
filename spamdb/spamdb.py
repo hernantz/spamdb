@@ -9,7 +9,7 @@ __all__ = ['SUPER_GLOBAL_HANDLERS', 'super_global_handler', '_decorate',
            'spam_floatfield', 'spam_doublefield', 'spam_bigintegerfield',
            'spam_decimalfield', 'spam_primarykeyfield', 'spam_timefield',
            'spam_integerfield', 'spam_booleanfield', 'spam_datefield',
-           'spam_foreignkeyfield']
+           'spam_foreignkeyfield', 'spam_choices']
 
 SUPER_GLOBAL_HANDLERS = {}  # will hold all spam functions for every field type
 
@@ -125,6 +125,11 @@ def spam_timefield(model, field_type, field_name):
     return datetime.time(hour=hour, minute=minute, second=second)
 
 
+def spam_choices(model, field_type, field_name):
+    choices = getattr(model, field_name).choices
+    return random.choice(choices)
+
+
 def _coin_toss():
     """
     Used to ignore or not a nullable field
@@ -204,19 +209,23 @@ class Spamdb(list):
         attrs = {}  # this dict will hold all spammed attributes
 
         for field_name, field_instance in model._meta.get_sorted_fields():
+            params = (model, field_instance.__class__, field_name)
+
             if field_instance.null and _coin_toss():
                 continue  # the field can be null and it was randomly skipped
             else:
                 # otherwise the field can not be null
                 # or can be null but was randomly set to have a value
-                handler = self.get_handler(model,
-                                           field_instance.__class__,
-                                           field_name)
-                if handler is not None:
-                    attr_value = handler(model,
-                                         field_instance.__class__,
-                                         field_name)
-                    attrs.update({field_name: attr_value})
+
+                if field_instance.choices:
+                    handler = spam_choices  # pick a random choice if possible
+                else:
+                    # find an appropiate handler
+                    handler = self.get_handler(*params)
+
+                attr_value = handler(*params)
+                attrs.update({field_name: attr_value})
+
         return attrs
 
     def spam_model(self, model, save=False):
