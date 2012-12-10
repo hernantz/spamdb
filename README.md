@@ -6,6 +6,7 @@ It also provides a bunch of methods to spam every database field of your model w
 randomly generated value. Each method can be overrided with your own spam functions.
 
 The simplest use case would be:
+
     ```python
     from spamdb import Spamdb     
     from myapp import models
@@ -16,6 +17,7 @@ The simplest use case would be:
     ```
 
 Override the default spam functions with your own
+
     ```python
 	import spamdb
 	import myapp.models
