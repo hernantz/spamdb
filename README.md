@@ -11,8 +11,8 @@ The simplest use case would be:
     from myapp import models
 
 
-    sdb = Spamdb(models.User, models.Blog)
-    sdb.run()  # spam all User and Blog fields and save them to the database
+    # spam all User and Blog db fields and save them to the database
+    Spamdb(models.User, models.Blog).run()
 
 Override the default spam functions with your own
 
