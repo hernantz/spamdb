@@ -104,7 +104,8 @@ def spam_primarykeyfield(model, field_type, field_name):
 def spam_foreignkeyfield(model, field_type, field_name):
     related_model = getattr(model, field_name).rel_model
     query = related_model.select().order_by(peewee.fn.Random()).limit(1)
-    return [model for model in query][0]
+    if query.count():
+        return [model for model in query][0]
 
 
 @super_global_handler(peewee.DateField)
