@@ -6,17 +6,17 @@ It also provides a bunch of methods to spam every database field of your model w
 randomly generated value. Each method can be overrided with your own spam functions.
 
 The simplest use case would be:
-    '''python
+    ```python
     from spamdb import Spamdb     
     from myapp import models
 
 
     sdb = Spamdb(models.User, models.Blog)
     sdb.run()  # spam all User and Blog fields and save them to the database
-    '''
+    ```
 
 Override the default spam functions with your own
-    '''python
+    ```python
 	import spamdb
 	import myapp.models
 	import peewee
@@ -35,4 +35,4 @@ Override the default spam functions with your own
 
 	if __name__ == '__main__':
 		sdb.run(iterations=100)
-    '''
+    ```
